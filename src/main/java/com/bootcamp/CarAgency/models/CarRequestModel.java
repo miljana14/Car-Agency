@@ -2,7 +2,7 @@ package com.bootcamp.CarAgency.models;
 
 import java.util.UUID;
 
-public class CarModel {
+public class CarRequestModel {
     private UUID car_id;
     private String licence_plate;
     private String make;
@@ -18,8 +18,7 @@ public class CarModel {
     private String fuel;
     private String image;
 
-    public CarModel(UUID car_id, String licence_plate, String make, String model, int year, int engine_capacity, String color, double price, int doors, String size, int power, boolean automatic, String fuel, String image) {
-        this.car_id = car_id;
+    public CarRequestModel(String licence_plate, String make, String model, int year, int engine_capacity, String color, double price, int doors, String size, int power, boolean automatic, String fuel, String image) {
         this.licence_plate = licence_plate;
         this.make = make;
         this.model = model;
@@ -35,8 +34,7 @@ public class CarModel {
         this.image = image;
     }
 
-    public CarModel(CarModel carModel){
-        this.car_id = carModel.car_id;
+    public CarRequestModel(CarRequestModel carModel){
         this.licence_plate = carModel.licence_plate;
         this.make = carModel.make;
         this.model = carModel.model;
@@ -51,7 +49,6 @@ public class CarModel {
         this.fuel = carModel.fuel;
         this.image = carModel.image;
     }
-
 
     public UUID getCar_id() {
         return car_id;
@@ -107,61 +104,5 @@ public class CarModel {
 
     public String getImage() {
         return image;
-    }
-
-    public void setCar_id(UUID car_id) {
-        this.car_id = car_id;
-    }
-
-    public void setLicence_plate(String licence_plate) {
-        this.licence_plate = licence_plate;
-    }
-
-    public void setMake(String make) {
-        this.make = make;
-    }
-
-    public void setModel(String model) {
-        this.model = model;
-    }
-
-    public void setYear(int year) {
-        this.year = year;
-    }
-
-    public void setEngine_capacity(int engine_capacity) {
-        this.engine_capacity = engine_capacity;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public void setDoors(int doors) {
-        this.doors = doors;
-    }
-
-    public void setSize(String size) {
-        this.size = size;
-    }
-
-    public void setPower(int power) {
-        this.power = power;
-    }
-
-    public void setAutomatic(boolean automatic) {
-        this.automatic = automatic;
-    }
-
-    public void setFuel(String fuel) {
-        this.fuel = fuel;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
     }
 }
