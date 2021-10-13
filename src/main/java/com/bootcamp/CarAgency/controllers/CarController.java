@@ -2,12 +2,17 @@ package com.bootcamp.CarAgency.controllers;
 
 import com.bootcamp.CarAgency.daos.CarDaoRequestSql;
 import com.bootcamp.CarAgency.daos.CarDaoSql;
+import com.bootcamp.CarAgency.daos.ContractDaoSql;
 import com.bootcamp.CarAgency.daos.UserDaoSql;
 import com.bootcamp.CarAgency.models.CarModel;
 import com.bootcamp.CarAgency.models.CarRequestModel;
 import com.bootcamp.CarAgency.models.CarResponseModel;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,6 +21,7 @@ public class CarController {
     CarDaoSql cd = new CarDaoSql();
     UserDaoSql ud = new UserDaoSql();
     CarDaoRequestSql cdr = new CarDaoRequestSql();
+    ContractDaoSql contractDao = new ContractDaoSql();
 
     @GetMapping("/cars")
     public List<CarModel> getAllCars(){
@@ -76,5 +82,55 @@ public class CarController {
             }
 
             return new CarResponseModel(adminId,"User with this ID is not an admin and don`t have permission to update!");
+    }
+
+    @GetMapping("/cars/search")
+    public List<CarModel> searchCars(@RequestParam(required = false) Integer year,
+                                                  @RequestParam(required = false) String make,
+                                                  @RequestParam(required = false) String model,
+                                                  @RequestParam(required = false) Boolean automatic,
+                                                  @RequestParam(required = false) Double price,
+                                                  @RequestParam(required = false) Integer power,
+                                                  @RequestParam(required = false) Integer doors){
+        List<CarModel> cars = cdr.searchCars(year, make, model, automatic, price, power, doors);
+        return cars;
+
+    }
+
+    @GetMapping("/cars/available")
+    public List<CarModel> getAVailableCars(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate){
+        return cd.getAvailableCars(startDate,endDate);
+    }
+
+    @GetMapping("/cars/available/search")
+    public List<CarModel> searchAvailableCars(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+                                              @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
+                                              @RequestParam(required = false) Integer year,
+                                              @RequestParam(required = false) String make,
+                                              @RequestParam(required = false) String model,
+                                              @RequestParam(required = false) Boolean automatic,
+                                              @RequestParam(required = false) Double price,
+                                              @RequestParam(required = false) Integer power,
+                                              @RequestParam(required = false) Integer doors){
+        List<CarModel> cars = cd.getAvailableCars(startDate,endDate);
+        List<CarModel> cars2 = cdr.searchCars(year, make, model, automatic, price, power, doors);
+        List<CarModel> cars3 = new ArrayList<>();
+        for (var x : cars){
+            for (var y : cars2){
+                if (y.getModel().contains(model)) {
+                    if (x.getModel().equals(y.getModel())){
+                        cars3.add(x);
+                        return cars3;
+                    }
+                }
+            }
+
+        }
+        return cars;
+    }
+
+    @GetMapping("/cars/{car_id}/calendar")
+    public List<Date> getAllCars(@PathVariable("car_id") UUID id){
+        return contractDao.getAllUnaviableDate(id);
     }
 }

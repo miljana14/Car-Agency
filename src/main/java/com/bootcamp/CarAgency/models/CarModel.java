@@ -35,6 +35,23 @@ public class CarModel {
         this.image = image;
     }
 
+    public CarModel(UUID car_id, String licence_plate, String make, String model, Integer year, Integer engine_capacity, String color, Double price, Integer doors, String size, Integer power, Boolean automatic, String fuel, String image) {
+        this.car_id = car_id;
+        this.licence_plate = licence_plate;
+        this.make = make;
+        this.model = model;
+        this.year = year;
+        this.engine_capacity = engine_capacity;
+        this.color = color;
+        this.price = price;
+        this.doors = doors;
+        this.size = size;
+        this.power = power;
+        this.automatic = automatic;
+        this.fuel = fuel;
+        this.image = image;
+    }
+
     public CarModel(CarModel carModel){
         this.car_id = carModel.car_id;
         this.licence_plate = carModel.licence_plate;
