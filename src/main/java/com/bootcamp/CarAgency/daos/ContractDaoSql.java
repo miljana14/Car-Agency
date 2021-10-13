@@ -4,7 +4,6 @@ import com.bootcamp.CarAgency.database.DatabaseConnection;
 import com.bootcamp.CarAgency.models.ContractModel;
 
 import java.sql.*;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -14,11 +13,6 @@ public class ContractDaoSql implements ContractDao{
     static Connection conn = DatabaseConnection.getConnection();
 
     @Override
-    public List<ContractModel> getAllContracts() {
-        return null;
-    }
-
-    //@Override
     public List<Date> getAllUnaviableDate(UUID carId) {
         List<Date> allUnaviableDates = new ArrayList<>();
         try {

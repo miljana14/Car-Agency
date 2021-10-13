@@ -6,18 +6,19 @@ import com.bootcamp.CarAgency.models.CarRequestModel;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-public class CarDaoRequestSql {
+public class CarDaoRequestSql implements CarDaoRequest{
     static Connection conn = DatabaseConnection.getConnection();
 
+    @Override
     public List<CarRequestModel> getAllCars() {
         List<CarRequestModel> allCars = new ArrayList<>();
         try {
             Statement st = conn.createStatement();
-            ResultSet rs = st.executeQuery("SELECT licence_plate, make, model, year , engine_capacity , color , price, doors, size , power, automatic , fuel, image FROM cars");
+            ResultSet rs = st.executeQuery("SELECT licence_plate, make, model, year , engine_capacity , color , price, doors, " +
+                                                "size , power, automatic , fuel, image FROM cars");
             while(rs.next()){
                 CarRequestModel newCar = new CarRequestModel(
                         rs.getString(1),
@@ -43,6 +44,7 @@ public class CarDaoRequestSql {
         return allCars;
     }
 
+    @Override
     public void update(CarRequestModel cm, UUID id) {
         try {
             PreparedStatement st = conn.prepareStatement("UPDATE cars " +
@@ -80,6 +82,7 @@ public class CarDaoRequestSql {
         }
     }
 
+    @Override
     public List<CarModel> searchCars(Integer year, String make, String model, Boolean automatic, Double price, Integer power, Integer doors) {
         List<CarModel> cars = new ArrayList<>();
         try {
@@ -114,43 +117,4 @@ public class CarDaoRequestSql {
         }
         return cars;
     }
-
-
-//    public List<CarModel> searchAvailableCars(Date startDate, Date endDate, Integer year, String make, String model, Boolean automatic, Double price, Integer power, Integer doors) {
-//        List<CarModel> cars = new ArrayList<>();
-//        try {
-//            Statement st = conn.createStatement();
-//            ResultSet rs = st.executeQuery("SELECT * FROM cars JOIN contracts ON cars.car_id = contracts.car_id WHERE" +
-//                    " start_date >= '" + startDate + "'" +
-//                    " AND end_date <= '" + endDate + "'" +
-//                    " OR year >= " + year +
-//                    " OR make LIKE '%" + make + "%'" +
-//                    " OR model LIKE '%" + model + "%'" +
-//                    " OR automatic = " + automatic +
-//                    " OR price <= " + price +
-//                    " OR power <= " + power +
-//                    " OR doors = " + doors);
-//            while(rs.next()){
-//                CarModel newCar = new CarModel(UUID.fromString(rs.getString(1)),
-//                        rs.getString(2),
-//                        rs.getString(3),
-//                        rs.getString(4),
-//                        rs.getInt(5),
-//                        rs.getInt(6),
-//                        rs.getString(7),
-//                        rs.getDouble(8),
-//                        rs.getInt(9),
-//                        rs.getString(10),
-//                        rs.getInt(11),
-//                        rs.getBoolean(12),
-//                        rs.getString(13),
-//                        rs.getString(14)
-//                );
-//                cars.add(newCar);
-//            }
-//        } catch (SQLException e){
-//            e.printStackTrace();
-//        }
-//        return cars;
-//    }
 }

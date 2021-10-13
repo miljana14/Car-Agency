@@ -7,6 +7,5 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ContractDao {
-    List<ContractModel> getAllContracts();
-    //List<Date> getAllUnaviableDate(UUID carId);
+    List<Date> getAllUnaviableDate(UUID carId);
 }
