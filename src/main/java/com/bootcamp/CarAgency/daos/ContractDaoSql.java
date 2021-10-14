@@ -1,7 +1,6 @@
 package com.bootcamp.CarAgency.daos;
 
 import com.bootcamp.CarAgency.database.DatabaseConnection;
-import com.bootcamp.CarAgency.models.ContractModel;
 
 import java.sql.*;
 import java.util.ArrayList;

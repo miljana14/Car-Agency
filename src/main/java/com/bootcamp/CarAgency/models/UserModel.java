@@ -27,6 +27,19 @@ public class UserModel {
         this.admin = admin;
     }
 
+    public UserModel(UserModel um){
+        this.user_id = um.user_id;
+        this.username = um.username;
+        this.email = um.email;
+        this.password = um.password;
+        this.first_name = um.first_name;
+        this.last_name = um.last_name;
+        this.phone_number = um.phone_number;
+        this.personal_number = um.personal_number;
+        this.image = um.image;
+        this.admin = um.admin;
+    }
+
     public UUID getUser_id() {
         return user_id;
     }
