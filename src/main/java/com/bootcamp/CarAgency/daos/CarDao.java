@@ -1,6 +1,6 @@
 package com.bootcamp.CarAgency.daos;
 
-import com.bootcamp.CarAgency.models.CarModel;
+import com.bootcamp.CarAgency.models.cars.CarModel;
 
 import java.util.Date;
 import java.util.List;

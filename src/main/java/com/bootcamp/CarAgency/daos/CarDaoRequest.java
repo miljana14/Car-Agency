@@ -1,7 +1,7 @@
 package com.bootcamp.CarAgency.daos;
 
-import com.bootcamp.CarAgency.models.CarModel;
-import com.bootcamp.CarAgency.models.CarRequestModel;
+import com.bootcamp.CarAgency.models.cars.CarModel;
+import com.bootcamp.CarAgency.models.cars.CarRequestModel;
 
 import java.util.List;
 import java.util.UUID;

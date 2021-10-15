@@ -4,9 +4,9 @@ import com.bootcamp.CarAgency.daos.CarDaoRequestSql;
 import com.bootcamp.CarAgency.daos.CarDaoSql;
 import com.bootcamp.CarAgency.daos.ContractDaoSql;
 import com.bootcamp.CarAgency.daos.UserDaoSql;
-import com.bootcamp.CarAgency.models.CarModel;
-import com.bootcamp.CarAgency.models.CarRequestModel;
-import com.bootcamp.CarAgency.models.CarResponseModel;
+import com.bootcamp.CarAgency.models.cars.CarModel;
+import com.bootcamp.CarAgency.models.cars.CarRequestModel;
+import com.bootcamp.CarAgency.models.cars.CarResponseModel;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,7 +1,6 @@
-package com.bootcamp.CarAgency.models;
+package com.bootcamp.CarAgency.models.users;
 
-public class UserGetResponseModel {
-
+public class AdminRequestModel {
     private String username;
     private String email;
     private String first_name;
@@ -10,7 +9,7 @@ public class UserGetResponseModel {
     private String personal_number;
     private String image;
 
-    public UserGetResponseModel(String username, String email, String first_name, String last_name, String phone_number, String personal_number, String image) {
+    public AdminRequestModel(String username, String email, String first_name, String last_name, String phone_number, String personal_number, String image) {
         this.username = username;
         this.email = email;
         this.first_name = first_name;
@@ -46,5 +45,33 @@ public class UserGetResponseModel {
 
     public String getImage() {
         return image;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setFirst_name(String first_name) {
+        this.first_name = first_name;
+    }
+
+    public void setLast_name(String last_name) {
+        this.last_name = last_name;
+    }
+
+    public void setPhone_number(String phone_number) {
+        this.phone_number = phone_number;
+    }
+
+    public void setPersonal_number(String personal_number) {
+        this.personal_number = personal_number;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

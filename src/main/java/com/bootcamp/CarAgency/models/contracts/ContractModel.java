@@ -1,4 +1,4 @@
-package com.bootcamp.CarAgency.models;
+package com.bootcamp.CarAgency.models.contracts;
 
 import java.util.Date;
 import java.util.UUID;

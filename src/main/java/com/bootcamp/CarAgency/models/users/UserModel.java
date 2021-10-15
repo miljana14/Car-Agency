@@ -1,4 +1,4 @@
-package com.bootcamp.CarAgency.models;
+package com.bootcamp.CarAgency.models.users;
 
 import java.util.UUID;
 

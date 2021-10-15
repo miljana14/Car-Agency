@@ -1,7 +1,6 @@
 package com.bootcamp.CarAgency.daos;
 
-import com.bootcamp.CarAgency.models.UserModel;
-import com.bootcamp.CarAgency.models.UserGetResponseModel;
+import com.bootcamp.CarAgency.models.users.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -10,4 +9,8 @@ public interface UserDao {
     UserModel getUser(UUID id);
     List<UserModel> getAllUsers();
     List<UserGetResponseModel> getAllResponseUsers();
+    void update(UserRequestModel um, UUID id);
+    boolean login(String identification, String password);
+    void register(RegisterRequestModel rrm);
+    void adminUpdate(AdminRequestModel am, UUID id);
 }
