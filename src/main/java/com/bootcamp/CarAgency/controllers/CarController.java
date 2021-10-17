@@ -92,8 +92,7 @@ public class CarController {
                                                   @RequestParam(required = false) Double price,
                                                   @RequestParam(required = false) Integer power,
                                                   @RequestParam(required = false) Integer doors){
-        List<CarModel> cars = cdr.searchCars(year, make, model, automatic, price, power, doors);
-        return cars;
+        return cdr.searchCars(year, make, model, automatic, price, power, doors);
 
     }
 
