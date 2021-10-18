@@ -79,4 +79,8 @@ public class UserModel {
     public boolean isAdmin() {
         return admin;
     }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }

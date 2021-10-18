@@ -2,6 +2,8 @@ package com.bootcamp.CarAgency.daos;
 
 import com.bootcamp.CarAgency.database.DatabaseConnection;
 import com.bootcamp.CarAgency.models.users.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,29 +14,28 @@ public class UserDaoSql implements UserDao{
     static Connection conn = DatabaseConnection.getConnection();
 
     @Override
-    public UserModel getUser(UUID id) {
+    public UserGetResponseModel getUser(UUID id) {
         try {
-            PreparedStatement st = conn.prepareStatement("SELECT * FROM users WHERE user_id = ?");
+            PreparedStatement st = conn.prepareStatement("SELECT username, email, first_name, last_name, " +
+                                                            "phone_number, personal_number, image FROM users" +
+                                                            " WHERE user_id = ?");
             st.setString(1, id.toString());
             ResultSet rs = st.executeQuery();
             rs.next();
-            UserModel newUser = new UserModel(
-                    UUID.fromString(rs.getString(1)),
+            UserGetResponseModel newUser = new UserGetResponseModel(
+                    rs.getString(1),
                     rs.getString(2),
                     rs.getString(3),
                     rs.getString(4),
                     rs.getString(5),
                     rs.getString(6),
-                    rs.getString(7),
-                    rs.getString(8),
-                    rs.getString(9),
-                    rs.getBoolean(10)
+                    rs.getString(7)
             );
             return newUser;
         }catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-        return null;
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 
     @Override
@@ -69,7 +70,8 @@ public class UserDaoSql implements UserDao{
         List<UserGetResponseModel> allUsers = new ArrayList<>();
         try {
             Statement st = conn.createStatement();
-            ResultSet rs = st.executeQuery("SELECT * FROM users");
+            ResultSet rs = st.executeQuery("SELECT username, email, first_name, last_name, " +
+                                                "phone_number, personal_number, image FROM users");
             while(rs.next()){
                 UserGetResponseModel newUser = new UserGetResponseModel(
                         rs.getString(1),

@@ -69,6 +69,8 @@ public class CarModel {
         this.image = carModel.image;
     }
 
+    public CarModel() {
+    }
 
     public UUID getCar_id() {
         return car_id;

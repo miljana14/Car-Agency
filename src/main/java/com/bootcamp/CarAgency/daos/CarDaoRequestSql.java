@@ -7,6 +7,7 @@ import com.bootcamp.CarAgency.models.cars.CarRequestModel;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
 import java.util.UUID;
 
 public class CarDaoRequestSql implements CarDaoRequest{
@@ -94,6 +95,46 @@ public class CarDaoRequestSql implements CarDaoRequest{
                                                 " OR price <= " + price +
                                                 " OR power <= " + power +
                                                 " OR doors = " + doors);
+            while(rs.next()){
+                CarModel newCar = new CarModel(UUID.fromString(rs.getString(1)),
+                        rs.getString(2),
+                        rs.getString(3),
+                        rs.getString(4),
+                        rs.getInt(5),
+                        rs.getInt(6),
+                        rs.getString(7),
+                        rs.getDouble(8),
+                        rs.getInt(9),
+                        rs.getString(10),
+                        rs.getInt(11),
+                        rs.getBoolean(12),
+                        rs.getString(13),
+                        rs.getString(14)
+                );
+                cars.add(newCar);
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+        return cars;
+    }
+
+
+    public List<CarModel> searchAvailableCars(Date startDate, Date endDate, Integer year, String make, String model, Boolean automatic, Double price, Integer power, Integer doors) {
+        List<CarModel> cars = new ArrayList<>();
+        try {
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery("SELECT * FROM cars LEFT JOIN contracts ON cars.car_id = contracts.car_id WHERE ((start_date >= '" +
+                      startDate + "' AND end_date <= '" + endDate + "')" +
+                    " OR (start_date <= '" + startDate + "' OR end_date >= '" + endDate + "')" +
+                    " OR (start_date IS NULL OR end_date IS NULL))" +
+                    " AND (year >= " + year +
+                    " OR make LIKE '%" + make + "%'" +
+                    " OR model LIKE '%" + model + "%'" +
+                    " OR automatic = " + automatic +
+                    " OR price <= " + price +
+                    " OR power <= " + power +
+                    " OR doors = " + doors + ")");
             while(rs.next()){
                 CarModel newCar = new CarModel(UUID.fromString(rs.getString(1)),
                         rs.getString(2),

@@ -1,19 +1,20 @@
 package com.bootcamp.CarAgency.controllers;
 
 import com.bootcamp.CarAgency.daos.UserDaoSql;
-
 import com.bootcamp.CarAgency.models.users.*;
+import com.bootcamp.CarAgency.services.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @RestController
 public class UserController {
     UserDaoSql ud = new UserDaoSql();
+    UserService us = new UserService();
 
     static String password = "^(?=.*[0-9])"
             + "(?=.*[a-z])(?=.*[A-Z])"
@@ -21,60 +22,44 @@ public class UserController {
     static String email = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
     static String phoneNumber = "^[+][0-9]{1,4}[0-9]{5,8}$";
 
-    public static boolean isValid(String s, String regex){
-        Pattern p = Pattern.compile(regex);
-        Matcher m = p.matcher(s);
-        return m.matches();
-    }
 
-    public static boolean isValidLength(String s, int num){
-        return s.length() >= num;
-    }
-
-    public static boolean isValidLengthExact(String s, int num){
-        return s.length() == num;
-    }
 
     @GetMapping("/users/{user_id}")
-    public UserModel getUser(@PathVariable("user_id") UUID id){
-        for (var x : ud.getAllUsers()){
-            if (x.getUser_id().equals(id))
-                return ud.getUser(id);
-        }
-        return null;
+    public UserGetResponseModel getUser(@PathVariable("user_id") UUID id){
+        return ud.getUser(id);
     }
 
     @GetMapping("/users")
     public List<UserGetResponseModel> getAllUsers(@RequestHeader("idAdmin") UUID id){
-        if (getUser(id).isAdmin()){
+        if (us.getAdmin(id)){
             return ud.getAllResponseUsers();
         }
-        return null;
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
     }
 
     @PatchMapping("/users/{user_id}")
-    public UserResponseModel update(@RequestBody UserRequestModel user, @PathVariable("user_id") UUID id){
-            String oldPass = user.getPassword();
-            String newPass = user.getNewPassword();
-
-            for (var x : ud.getAllUsers()) {
-                if (!getUser(id).isAdmin()){
-                if (oldPass.equals(x.getPassword())) {
-                    if (isValid(newPass,password)) {
-                        user.setPassword(newPass);
+    public UserResponseModel update(@RequestBody UserRequestModel user, @PathVariable("user_id") UUID id) throws NoSuchAlgorithmException {
+        user.setPassword(us.toHexString(us.getSHA(user.getPassword())));
+        for (var x : ud.getAllUsers()) {
+            if (!us.getAdmin(id)){
+                if (user.getPassword().equals(x.getPassword())) {
+                    if (us.isValid(user.getNewPassword(),password)) {
+                        user.setNewPassword(us.toHexString(us.getSHA(user.getNewPassword())));
+                        user.setPassword(user.getNewPassword());
                         ud.update(user, id);
                         return new UserResponseModel(true, "Successfully updated");
                     }
                 }
-                }
             }
+        }
         return new UserResponseModel(false,"Password not valid!");
     }
 
     @PostMapping("/users/login")
-    public LoginResponseModel login(@RequestBody LoginRequestModel info){
+    public LoginResponseModel login(@RequestBody LoginRequestModel info) throws NoSuchAlgorithmException {
+        info.setPassword(us.toHexString(us.getSHA(info.getPassword())));
         for (var x : ud.getAllUsers()){
-            if (ud.login(info.getIdentification(),info.getPassword())){
+            if (ud.login(info.getIdentification(),info.getPassword()) && (info.getIdentification().equals(x.getEmail()) || info.getIdentification().equals(x.getUsername()))){
                 return new LoginResponseModel(true, x.getUser_id().toString());
             }
         }
@@ -88,7 +73,12 @@ public class UserController {
                 return new RegisterResponseModel(false,"Username/email is already taken!");
             }
         }
-        if (isValid(info.getEmail(),email) && isValidLength(info.getUsername(),3) && isValid(info.getPassword(),password)){
+        if (us.isValid(info.getEmail(),email) && us.isValidLength(info.getUsername(),3) && us.isValid(info.getPassword(),password)){
+            try {
+                info.setPassword(us.toHexString(us.getSHA(info.getPassword())));
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
             ud.register(info);
             return new RegisterResponseModel(true,info.getUsername() + " - " + info.getEmail() +" is successfully registrated!");
         }
@@ -97,7 +87,7 @@ public class UserController {
 
     @PatchMapping("/admin/update/{user_id}")
     public AdminResponseModel adminUpdate(@RequestBody AdminRequestModel admin, @PathVariable("user_id") UUID id, @RequestHeader("idAdmin") UUID adminId){
-            if (!getUser(adminId).isAdmin()) {
+            if (!us.getAdmin(adminId)) {
                 return new AdminResponseModel(false,"You are not admin!");
             }
         List<String> changed = new ArrayList<>();
@@ -107,22 +97,22 @@ public class UserController {
                 return new AdminResponseModel(false,"Unique value!");
             }
 
-            if (isValid(admin.getEmail(), email) && isValidLength(admin.getEmail(), 3)) {
+            if (us.isValid(admin.getEmail(), email) && us.isValidLength(admin.getEmail(), 3)) {
                 changed.add(admin.getEmail());
             }
-            if (isValidLength(admin.getUsername(), 3)) {
+            if (us.isValidLength(admin.getUsername(), 3)) {
                 changed.add(admin.getUsername());
             }
-            if (isValidLength(admin.getFirst_name(), 1)) {
+            if (us.isValidLength(admin.getFirst_name(), 1)) {
                 changed.add(admin.getFirst_name());
             }
-            if (isValidLength(admin.getLast_name(), 1)) {
+            if (us.isValidLength(admin.getLast_name(), 1)) {
                 changed.add(admin.getLast_name());
             }
-            if (isValidLengthExact(admin.getPersonal_number(), 9)) {
+            if (us.isValidLengthExact(admin.getPersonal_number(), 9)) {
                 changed.add(admin.getPersonal_number());
             }
-            if (isValid(admin.getPhone_number(), phoneNumber)) {
+            if (us.isValid(admin.getPhone_number(), phoneNumber)) {
                 changed.add(admin.getPhone_number());
             }
 

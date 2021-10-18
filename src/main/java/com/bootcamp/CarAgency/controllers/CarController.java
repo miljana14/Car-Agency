@@ -7,14 +7,12 @@ import com.bootcamp.CarAgency.daos.UserDaoSql;
 import com.bootcamp.CarAgency.models.cars.CarModel;
 import com.bootcamp.CarAgency.models.cars.CarRequestModel;
 import com.bootcamp.CarAgency.models.cars.CarResponseModel;
+import com.bootcamp.CarAgency.services.UserService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 public class CarController {
@@ -22,6 +20,7 @@ public class CarController {
     UserDaoSql ud = new UserDaoSql();
     CarDaoRequestSql cdr = new CarDaoRequestSql();
     ContractDaoSql contractDao = new ContractDaoSql();
+    UserService us = new UserService();
 
     @GetMapping("/cars")
     public List<CarModel> getAllCars(){
@@ -36,17 +35,15 @@ public class CarController {
     @PostMapping("/cars")
     public CarResponseModel addCar(@RequestBody CarModel car, @RequestHeader("idAdmin") UUID id){
         try{
-            for (var x : ud.getAllUsers()) {
-                for (var y : cd.getAllCars()){
-                    if (!(y.getLicence_plate().equals(car.getLicence_plate()))) {
-                        if (x.isAdmin() && x.getUser_id().toString().equals(id.toString())) {
-                            cd.add(car);
-                            return new CarResponseModel(id, "Successfully imported car!");
-                        }
+            for (var y : cd.getAllCars()){
+                if (!(y.getLicence_plate().equals(car.getLicence_plate()))) {
+                    if (us.getAdmin(id)) {
+                        cd.add(car);
+                        return new CarResponseModel(id, "Successfully imported car!");
                     }
-                    else {
-                        return new CarResponseModel(id, "This car is already inserted");
-                    }
+                }
+                else {
+                    return new CarResponseModel(id, "This car is already inserted");
                 }
             }
         }
@@ -57,31 +54,23 @@ public class CarController {
     }
 
     @DeleteMapping("/cars/{car_id}")
-    public CarResponseModel delete(@PathVariable("car_id") UUID id, @RequestHeader("idAdmin") UUID adminId) {
-        for (var x : ud.getAllUsers()) {
-            for (var y : cd.getAllCars()){
-                if (x.getUser_id().toString().equals(adminId.toString()) && x.isAdmin() && (y.getCar_id().equals(id))) {
-                    cd.delete(id);
-                    return new CarResponseModel(id, "Successfully deleted!");
-                }
-
+    public CarResponseModel delete(@PathVariable("car_id") UUID id, @RequestHeader("idAdmin") UUID idAdmin) {
+        for (var y : cd.getAllCars()){
+            if (us.getAdmin(idAdmin) && (y.getCar_id().equals(id))) {
+                cd.delete(id);
+                return new CarResponseModel(id, "Successfully deleted!");
             }
-
         }
-        return new CarResponseModel(adminId,"User with this ID is not an admin or car is already deleted!");
+        return new CarResponseModel(idAdmin,"User with this ID is not an admin or car is already deleted!");
 }
 
     @PatchMapping("/cars/{car_id}")
     public CarResponseModel update(@RequestBody CarRequestModel car, @PathVariable("car_id") UUID id, @RequestHeader("idAdmin") UUID adminId){
-            for (var x : ud.getAllUsers()) {
-                if (x.getUser_id().toString().equals(adminId.toString()) && x.isAdmin()) {
-                    cdr.update(car,id);
-                    return new CarResponseModel(id, "Successfully updated");
-                }
-
-            }
-
-            return new CarResponseModel(adminId,"User with this ID is not an admin and don`t have permission to update!");
+        if (us.getAdmin(adminId)) {
+            cdr.update(car,id);
+            return new CarResponseModel(id, "Successfully updated");
+        }
+        return new CarResponseModel(adminId,"User with this ID is not an admin and don`t have permission to update!");
     }
 
     @GetMapping("/cars/search")
@@ -98,11 +87,13 @@ public class CarController {
 
     @GetMapping("/cars/available")
     public List<CarModel> getAVailableCars(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate){
+        List<CarModel> cars = cd.getAllCars();
+
         return cd.getAvailableCars(startDate,endDate);
     }
 
     @GetMapping("/cars/available/search")
-    public List<CarModel> searchAvailableCars(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+    public List<CarModel> searchAvailableSearchCars(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
                                               @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
                                               @RequestParam(required = false) Integer year,
                                               @RequestParam(required = false) String make,
@@ -111,21 +102,8 @@ public class CarController {
                                               @RequestParam(required = false) Double price,
                                               @RequestParam(required = false) Integer power,
                                               @RequestParam(required = false) Integer doors){
-        List<CarModel> cars = cd.getAvailableCars(startDate,endDate);
-        List<CarModel> cars2 = cdr.searchCars(year, make, model, automatic, price, power, doors);
-        List<CarModel> cars3 = new ArrayList<>();
-        for (var x : cars){
-            for (var y : cars2){
-                if (y.getModel().contains(model)) {
-                    if (x.getModel().equals(y.getModel())){
-                        cars3.add(x);
-                        return cars3;
-                    }
-                }
-            }
 
-        }
-        return cars;
+        return cdr.searchAvailableCars(startDate,endDate,year, make, model, automatic, price, power, doors);
     }
 
     @GetMapping("/cars/{car_id}/calendar")

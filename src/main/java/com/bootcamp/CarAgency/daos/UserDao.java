@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface UserDao {
-    UserModel getUser(UUID id);
+    UserGetResponseModel getUser(UUID id);
     List<UserModel> getAllUsers();
     List<UserGetResponseModel> getAllResponseUsers();
     void update(UserRequestModel um, UUID id);

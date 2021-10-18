@@ -1,18 +1,14 @@
 package com.bootcamp.CarAgency.daos;
 
 import com.bootcamp.CarAgency.database.DatabaseConnection;
-import com.bootcamp.CarAgency.models.cars.CarModel;
 import com.bootcamp.CarAgency.models.contracts.ContractApprovalRequestModel;
 import com.bootcamp.CarAgency.models.contracts.ContractModel;
-import com.bootcamp.CarAgency.models.users.UserRequestModel;
 
 import java.sql.*;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class ContractDaoSql implements ContractDao{
     static Connection conn = DatabaseConnection.getConnection();

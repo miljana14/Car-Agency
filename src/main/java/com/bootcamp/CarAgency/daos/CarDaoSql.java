@@ -114,7 +114,10 @@ public class CarDaoSql implements CarDao{
         List<CarModel> allCars = new ArrayList<>();
         try {
             Statement st = conn.createStatement();
-            ResultSet rs = st.executeQuery("SELECT * FROM cars JOIN contracts ON cars.car_id = contracts.car_id WHERE start_date >= '" + startDate + "' AND end_date <= '" + endDate + "'");
+            ResultSet rs = st.executeQuery("SELECT * FROM cars LEFT JOIN contracts ON cars.car_id = contracts.car_id WHERE (start_date >= " +
+                    "'" + startDate + "' AND end_date <= '" + endDate + "') OR " +
+                    "(start_date <= '" + startDate + "' OR end_date >= '" + endDate + "') OR" +
+                    "(start_date IS NULL OR end_date IS NULL)");
             while(rs.next()){
                 CarModel newCar = new CarModel(
                         UUID.fromString(rs.getString(1)),
